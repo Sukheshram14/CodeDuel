@@ -18,8 +18,10 @@ const server = http.createServer(app);
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
+  origin: ['http://localhost:3000', process.env.FRONTEND_URL],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
@@ -34,6 +36,16 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Initialize socket.io
 const io = socketService.init(server);
+
+// Debug middleware for API requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`, {
+    headers: req.headers,
+    body: req.body,
+    query: req.query
+  });
+  next();
+});
 
 // Routes
 app.use('/api/auth', authRoutes);

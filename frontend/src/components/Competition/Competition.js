@@ -176,7 +176,7 @@ const Competition = () => {
     });
 
     // Common handler for both event types
-    const handleCompetitionEnd = (data) => {
+    const handleCompetitionEnd = async (data) => {
       if (!data || !competitionData?.matchId || data.competitionId !== competitionData.matchId) {
         console.log('Ignoring competition end event - not matching current competition');
         return;
@@ -230,6 +230,38 @@ const Competition = () => {
         setShowResults(true);
         setMatchComplete(true);
         setMatchWinner(data.winner);
+        
+        // Update user stats
+        const updateUserStats = async () => {
+          try {
+            const isWin = data.winner === currentUserId;
+            const matchData = {
+              isWin,
+              timeSpent: mappedResults.find(r => r.isCurrentUser)?.codingTime || 0,
+              language: language.value,
+              opponent: mappedResults.find(r => !r.isCurrentUser)?.userId || 'Unknown',
+              coinsEarned: isWin ? Math.round(competitionData.entryFee * 1.8) : 10
+            };
+
+            const statsResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/user/match-complete`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+              },
+              body: JSON.stringify(matchData)
+            });
+
+            if (!statsResponse.ok) {
+              console.error('Failed to update user stats:', await statsResponse.text());
+            }
+          } catch (statsError) {
+            console.error('Error updating user stats:', statsError);
+          }
+        };
+
+        // Call the async function
+        await updateUserStats();
         
         // Refresh balance since winner should get coins
         if (data.winner === currentUserId) {

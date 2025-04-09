@@ -308,6 +308,7 @@ router.post('/submit', authMiddleware, async (req, res) => {
             competition.players[playerIndex].time = result.time || 0;
             competition.players[playerIndex].codingTime = codingTime || 0;
             competition.players[playerIndex].tabSwitches = tabSwitches || 0;
+            competition.players[playerIndex].language = languageId; // Store the language ID
             competition.players[playerIndex].submissionTime = new Date();
 
             await competition.save();
@@ -409,6 +410,36 @@ router.post('/submit', authMiddleware, async (req, res) => {
                         const loserId = player1.userId.toString() === winnerId.toString() 
                             ? player2.userId 
                             : player1.userId;
+                        
+                        // Update match stats for both players
+                        const winner = await User.findById(winnerId);
+                        const loser = await User.findById(loserId);
+                        
+                        // Get the winner and loser's submission details
+                        const winnerSubmission = competition.players.find(p => p.userId.toString() === winnerId.toString());
+                        const loserSubmission = competition.players.find(p => p.userId.toString() === loserId.toString());
+                        
+                        if (winner && winnerSubmission) {
+                            console.log('Winner language:', winnerSubmission.language, getLanguageIdentifier(winnerSubmission.language));
+                            await winner.updateMatchStats({
+                                isWin: true,
+                                timeSpent: winnerSubmission.codingTime || 0,
+                                language: getLanguageIdentifier(winnerSubmission.language),
+                                opponent: loserId,
+                                coinsEarned: Math.round(competition.entryFee * 1.8)
+                            });
+                        }
+                        
+                        if (loser && loserSubmission) {
+                            console.log('Loser language:', loserSubmission.language, getLanguageIdentifier(loserSubmission.language));
+                            await loser.updateMatchStats({
+                                isWin: false,
+                                timeSpent: loserSubmission.codingTime || 0,
+                                language: getLanguageIdentifier(loserSubmission.language),
+                                opponent: winnerId,
+                                coinsEarned: 10
+                            });
+                        }
                         
                         // Log the current balances before reward distribution
                         try {
