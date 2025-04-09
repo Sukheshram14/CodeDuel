@@ -1,0 +1,76 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  --neon-blue: #00f3ff;
+  --neon-purple: #6C63FF;
+  --neon-cyan: #00F5FF;
+  --neon-pink: #FF3366;
+  --neon-green: #00FF9F;
+  
+  --shadow-neon-purple: 0 0 20px rgba(108, 99, 255, 0.5);
+  --shadow-neon-cyan: 0 0 20px rgba(0, 245, 255, 0.5);
+  --shadow-neon-pink: 0 0 20px rgba(255, 51, 102, 0.5);
+  
+  --dark-bg: #0a0a0a;
+  --card-bg: #1a1a1a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--dark-bg);
+  color: #ffffff;
+}
+
+.neon-border {
+  box-shadow: 0 0 5px var(--neon-blue),
+              0 0 10px var(--neon-blue),
+              0 0 15px var(--neon-blue);
+}
+
+.neon-text {
+  text-shadow: 0 0 5px var(--neon-blue),
+               0 0 10px var(--neon-blue);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 100%);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.shadow-neon-purple {
+  box-shadow: var(--shadow-neon-purple);
+}
+
+.shadow-neon-cyan {
+  box-shadow: var(--shadow-neon-cyan);
+}
+
+.shadow-neon-pink {
+  box-shadow: var(--shadow-neon-pink);
+}
+
+.border-neon-purple {
+  border-color: var(--neon-purple);
+}
+
+.text-neon-purple {
+  color: var(--neon-purple);
+}
+
+.from-neon-purple {
+  --tw-gradient-from: var(--neon-purple);
+}
+
+.to-neon-cyan {
+  --tw-gradient-to: var(--neon-cyan);
+} 
