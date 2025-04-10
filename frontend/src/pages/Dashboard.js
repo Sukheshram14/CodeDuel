@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWallet } from '../context/WalletContext';
 import { Link, useNavigate } from 'react-router-dom';
 import ChatBot from '../components/Dashboard/ChatBot';
+import PerformanceCharts from '../components/Dashboard/PerformanceCharts';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -147,6 +148,9 @@ const Dashboard = () => {
             </button>
           </div>
         </div>
+
+        {/* Performance Charts */}
+        <PerformanceCharts stats={stats} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Stats Card */}
