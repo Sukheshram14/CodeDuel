@@ -210,7 +210,7 @@ const CompetitionResults = ({ results, competitionData, onClose }) => {
         </div>
         
         {/* Code Analysis Chatbot Section */}
-        <div className="mt-6 mb-6">
+        {/* <div className="mt-6 mb-6">
           <div className="bg-gray-700 p-4 rounded-lg">
             <h3 className="text-xl text-neon-cyan font-bold mb-4">Want to Improve?</h3>
             <CodeAnalysisChatBot 
@@ -219,7 +219,7 @@ const CompetitionResults = ({ results, competitionData, onClose }) => {
               results={currentPlayer}
             />
           </div>
-        </div>
+        </div> */}
         
         <div className="flex justify-center">
           <button 

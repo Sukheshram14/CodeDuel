@@ -5,7 +5,19 @@ dotenv.config();
 // Judge0 API Configuration
 const RAPID_API_URL = process.env.RAPID_API_URL || "https://judge0-ce.p.rapidapi.com/submissions";
 const RAPID_API_HOST = process.env.RAPID_API_HOST || "judge0-ce.p.rapidapi.com";
-const RAPID_API_KEY = process.env.RAPID_API_KEY;
+// const RAPID_API_KEY = process.env.RAPID_API_KEY;
+const RAPID_API_KEYS = process.env.RAPID_API_KEYS.split(",");
+let keyIndex = 0;
+let attempts = 0;
+
+const getApiKey = () => RAPID_API_KEYS[keyIndex];
+
+const rotateApiKey = () => {
+  keyIndex = (keyIndex + 1) % RAPID_API_KEYS.length;
+  attempts++;
+};
+
+
 
 // Language IDs for Judge0
 const languageIds = { 
@@ -280,7 +292,7 @@ const submitToJudge0 = async (sourceCode, language, input, expectedOutput) => {
         requestData,
         {
           headers: {
-            "X-RapidAPI-Key": RAPID_API_KEY,
+            "X-RapidAPI-Key": getApiKey(),
             "X-RapidAPI-Host": RAPID_API_HOST,
             "Content-Type": "application/json",
           },
@@ -290,22 +302,44 @@ const submitToJudge0 = async (sourceCode, language, input, expectedOutput) => {
     } catch (apiError) {
       console.error("Judge0 API Error:", apiError.message);
       
-      // Check specifically for rate limiting errors
+      // // Check specifically for rate limiting errors
+      // if (apiError.response && apiError.response.status === 429) {
+      //   console.error("Rate limit exceeded for Judge0 API");
+      //   return {
+      //     status: {
+      //       id: 0,
+      //       description: "API Rate Limit Exceeded"
+      //     },
+      //     memory: 0,
+      //     time: 0,
+      //     stdout: "The code execution service is currently unavailable due to rate limiting. Please try again later.",
+      //     stderr: null,
+      //     compile_output: null,
+      //     passed: false
+      //   };
+      // }
       if (apiError.response && apiError.response.status === 429) {
-        console.error("Rate limit exceeded for Judge0 API");
-        return {
-          status: {
-            id: 0,
-            description: "API Rate Limit Exceeded"
-          },
-          memory: 0,
-          time: 0,
-          stdout: "The code execution service is currently unavailable due to rate limiting. Please try again later.",
-          stderr: null,
-          compile_output: null,
-          passed: false
-        };
-      }
+  console.error("Rate limit hit for current RapidAPI key");
+
+  if (attempts >= RAPID_API_KEYS.length - 1) {
+    return {
+      status: {
+        id: 0,
+        description: "All API Keys Exhausted"
+      },
+      memory: 0,
+      time: 0,
+      stdout: "All execution service keys are currently rate-limited. Please try again later.",
+      stderr: null,
+      compile_output: null,
+      passed: false
+    };
+  }
+
+  rotateApiKey();
+  return submitToJudge0(sourceCode, language, input, expectedOutput);
+}
+
       
       // For other API errors
       return {

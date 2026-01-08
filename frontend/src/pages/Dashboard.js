@@ -289,8 +289,8 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Add ChatBot to the dashboard */}
-      <ChatBot />
+      {/* Add ChatBot to the dashboard 
+      <ChatBot />*/}
     </div>
   );
 };
